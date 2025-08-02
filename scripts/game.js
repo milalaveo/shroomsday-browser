@@ -1,5 +1,5 @@
 import { createPlayer, getPlayerPosition } from './player.js';
-import { spawnEnemy } from './enemy.js';
+import { spawnEnemy } from './Enemy/EnemyFactory.js';
 import { shootBullet } from './bullet.js';
 
 const game = document.getElementById('game');
@@ -34,19 +34,26 @@ function movePlayer() {
     const speed = 10;
     let { x, y } = getPlayerPosition(playerRef.current);
 
-    // W / Ц = вверх
+    const prevX = x;
+    const prevY = y;
+
     if (keys['w'] || keys['ц']) y -= speed;
-    // S / Ы = вниз
     if (keys['s'] || keys['ы']) y += speed;
-    // A / Ф = влево
     if (keys['a'] || keys['ф']) x -= speed;
-    // D / В = вправо
     if (keys['d'] || keys['в']) x += speed;
 
     playerRef.current.style.left = x + 'px';
     playerRef.current.style.top = y + 'px';
-}
 
+    // Управление анимацией
+    if (x !== prevX || y !== prevY) {
+        playerRef.current.classList.remove('idle');
+        playerRef.current.classList.add('walk');
+    } else {
+        playerRef.current.classList.remove('walk');
+        playerRef.current.classList.add('idle');
+    }
+}
 
 function plantSpore() {
     if (!canPlant || !playerRef.current) return;
@@ -83,26 +90,34 @@ function updateProgressBar() {
 
 function handlePlayerDeath(enemyEl, ex, ey) {
     if (!playerRef.current || isDead) return;
+
     const { x: px, y: py } = getPlayerPosition(playerRef.current);
-    if (Math.abs(ex - px) < 20 && Math.abs(ey - py) < 20) {
-        isDead = true;
-        game.removeChild(playerRef.current);
-        const last = shrooms.pop();
-        if (last) {
+    const isNear = Math.abs(ex - px) < 20 && Math.abs(ey - py) < 20;
+
+    if (!isNear) return;
+
+    isDead = true;
+    game.removeChild(playerRef.current);
+
+    const last = shrooms[shrooms.length - 1];
+
+    if (last) {
+        const { x, y } = getPlayerPosition(last);
+        setTimeout(() => {
             const { x, y } = getPlayerPosition(last);
             game.removeChild(last);
-            setTimeout(() => {
-                playerRef.current = createPlayer(game, '🌱', x, y);
-                isDead = false;
-                updateProgressBar();
-            }, 1000);
-        } else {
-            document.getElementById('gameOverTime').textContent = getElapsedTime();
-            document.getElementById('gameOverModal').style.display = 'flex';
-
-        }
+            shrooms.pop();
+            playerRef.current = createPlayer(game, x, y);
+            isDead = false;
+            updateProgressBar();
+        }, 1000);
+    } else {
+        document.getElementById('gameOverTime').textContent = getElapsedTime();
+        document.getElementById('gameOverModal').style.display = 'flex';
     }
 }
+
+
 
 function handleShroomDestroyed(enemyEl, ex, ey) {
     for (let i = 0; i < shrooms.length; i++) {
@@ -131,7 +146,7 @@ function growShroom(x, y, sporeIndex) {
 }
 
 function spawn() {
-    const enemyObj = spawnEnemy(game, playerRef, handlePlayerDeath, handleShroomDestroyed);
+    const enemyObj = spawnEnemy(game, playerRef, handlePlayerDeath, handleShroomDestroyed, () => shrooms);
     enemies.push(enemyObj);
 }
 
@@ -142,7 +157,7 @@ let startTime = Date.now();
 function getElapsedTime() {
     const ms = Date.now() - startTime;
     const seconds = Math.floor(ms / 1000);
-    return `${seconds} сек.`;
+    return `${seconds} sec.`;
 }
 
 // Game Loop

@@ -1,7 +1,6 @@
-export function createPlayer(game, emoji = '🌱', x = 200, y = 200) {
+export function createPlayer(game, x = 200, y = 200) {
     const el = document.createElement('div');
-    el.className = 'player';
-    el.innerText = emoji;
+    el.className = 'player idle';
     el.style.left = x + 'px';
     el.style.top = y + 'px';
     game.appendChild(el);

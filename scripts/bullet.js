@@ -22,24 +22,26 @@ export function shootBullet(game, getPlayer, enemies, spores, onShroomGrown) {
                 const ey = parseInt(enemy.style.top);
 
                 if (Math.abs(ex - bx) < 20 && Math.abs(ey - by) < 20) {
-                    for (let i = 0; i < spores.length; i++) {
-                        const sx = parseInt(spores[i].style.left);
-                        const sy = parseInt(spores[i].style.top);
-                        if (Math.hypot(ex - sx, ey - sy) < 40) {
-                            onShroomGrown(sx, sy, i);
-                            break;
-                        }
-                    }
-
                     clearInterval(interval);
                     const isDead = enemyObj.takeDamage();
+
                     if (isDead) {
+                        // feed back to spores
+                        for (let i = spores.length - 1; i >= 0; i--) {
+                            const sx = parseInt(spores[i].style.left);
+                            const sy = parseInt(spores[i].style.top);
+                            if (Math.hypot(ex - sx, ey - sy) < 40) {
+                                onShroomGrown(sx, sy, i); // DOM manipulation 
+                            }
+                        }
+
                         game.removeChild(enemy);
                         enemies.splice(index, 1);
                     }
-                    game.removeChild(bullet);
 
+                    game.removeChild(bullet);
                 }
+
             });
 
             if (bx < 0 || by < 0 || bx > window.innerWidth || by > window.innerHeight) {
