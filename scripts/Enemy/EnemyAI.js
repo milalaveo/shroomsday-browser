@@ -7,7 +7,7 @@ export function createBasicEnemyAI(enemyObj, playerRef, getShrooms) {
     function updateTarget() {
         const shrooms = getShrooms();
         if (!aggroToPlayer && shrooms && shrooms.length > 0) {
-            // Ищем ближайшую грибницу
+            // look for nearest shroom
             const ex = parseInt(enemyObj.el.style.left);
             const ey = parseInt(enemyObj.el.style.top);
             let nearest = null;
@@ -23,7 +23,7 @@ export function createBasicEnemyAI(enemyObj, playerRef, getShrooms) {
             }
             enemyObj.target = nearest;
         } else {
-            // Идём к игроку
+            // Go to player
             const player = playerRef.current;
             if (player) {
                 const x = parseInt(player.style.left);
@@ -34,7 +34,7 @@ export function createBasicEnemyAI(enemyObj, playerRef, getShrooms) {
     }
 
     function updateAI() {
-        updateTarget(); // 💡 нужно вызывать КАЖДЫЙ РАЗ
+        updateTarget();
         const ex = parseInt(enemyObj.el.style.left);
         const ey = parseInt(enemyObj.el.style.top);
 
@@ -53,13 +53,13 @@ export function createBasicEnemyAI(enemyObj, playerRef, getShrooms) {
 
     enemyObj.updateAI = updateAI;
 
-    // 👉 Реакция на урон
+    // Damage notification
     enemyObj.notifyDamage = () => {
         aggroToPlayer = true;
         clearTimeout(aggroTimeout);
         aggroTimeout = setTimeout(() => {
             aggroToPlayer = false;
-        }, 5000); // 5 секунд агро на игрока
+        }, 5000); // 5 seconds of aggro
     };
 }
 
