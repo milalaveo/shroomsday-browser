@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shroom Prototype</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div id="game">
+        <div id="progressContainer">
+            <div id="counter">🍄 0 / 10</div>
+            <div id="progressBar">
+                <div id="progress"></div>
+            </div>
+        </div>
+        <div id="cooldownLabel">⏳ Кулдаун посадки</div>
+        <div id="cooldown">
+            <div id="cooldownFill"></div>
+        </div>
+        <div id="instructions">
+            <strong>Управление:</strong><br>
+            Стрелки — движение<br>
+            Мышь (клик) — стрельба<br>
+            Пробел — посадить спору<br>
+            <br>
+            <strong>Правила:</strong><br>
+            ▸ Убей врага вблизи споры — вырастет грибница<br>
+            ▸ Враги уничтожают грибницы<br>
+            ▸ Если умер — респаун на последней грибнице<br>
+            ▸ Цель: вырастить 10 грибниц
+        </div>
+        <!-- ☠️ Game Over Modal -->
+        <div id="gameOverModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>☠️ Game Over</h2>
+                <p>Your time score: <span id="gameOverTime"></span></p>
+                <button onclick="location.reload()">Retry</button>
+            </div>
+        </div>
+        <!-- 🏆 Victory Modal -->
+        <div id="victoryModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h2>🏆 Victory!</h2>
+                <p>Your time score: <span id="victoryTime"></span></p>
+                <button onclick="location.reload()">Play Again</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="scripts/game.js"></script>
+</body>
+
+</html>
